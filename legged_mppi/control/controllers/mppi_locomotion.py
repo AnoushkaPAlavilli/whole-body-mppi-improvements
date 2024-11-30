@@ -181,8 +181,14 @@ class MPPI(BaseMPPI):
         updated_actions = np.clip(weighted_delta_u, self.act_min, self.act_max)
 
         # Update the trajectory with the optimal action
-        self.selected_trajectory = updated_actions
-        self.trajectory = np.roll(updated_actions, shift=-1, axis=0)
+        # self.selected_trajectory = updated_actions
+        # self.trajectory = np.roll(updated_actions, shift=-1, axis=0)
+        # self.trajectory[-1] = updated_actions[-1]
+        # import pdb; pdb.set_trace()
+        # Improvement:
+        best_indices = np.argsort(costs_sum)[:self.n_samples // 5]  # 20% best trajectories
+        self.selected_trajectory = np.mean(actions[best_indices], axis=0)  # Trajectory is mean over best x% of sampled trajectories
+        self.trajectory = np.roll(self.selected_trajectory, shift=-1, axis=0)
         self.trajectory[-1] = updated_actions[-1]
 
         # Return the first action in the trajectory as the output action
