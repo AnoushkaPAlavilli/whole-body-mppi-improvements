@@ -18,6 +18,8 @@ DEFAULT_CONFIG_PATH = 'configs/mppi_gait_config_walk.yml'
 DEFAULT_SIM_PATH = 'models/go1/go1_scene_mppi.xml'
 DEFAULT_ORIENTATION = [[1, 0, 0, 0]]
 
+DEFAULT_RUGGED_SIM_PATH = 'models/go1/go1_scene_mppi_rugged_terr.xml'
+
 
 TASKS = {
     "walk_straight": {
@@ -41,6 +43,28 @@ TASKS = {
         "config_path": DEFAULT_CONFIG_PATH,
         "sim_path": DEFAULT_SIM_PATH
     },
+
+    "walk_straight_rugged_terr": {
+        "goal_pos": [[0, 0, 0.27], 
+                     [1, 0, 0.27], 
+                     [1, 0, 0.27]],
+        "default_orientation": DEFAULT_ORIENTATION,
+        "cmd_vel": [[0.0, 0.0], 
+                    [0.2, 0.0], 
+                    [0.0, 0.0]],
+        "goal_thresh": [0.2, 
+                        0.2, 
+                        0.2],
+        "desired_gait": ['in_place', 
+                         'walk_fast', 
+                         'in_place'],
+        "waiting_times": [0, 
+                          0, 
+                          0],
+        "model_path": DEFAULT_MODEL_PATH,
+        "config_path": DEFAULT_CONFIG_PATH,
+        "sim_path": DEFAULT_RUGGED_SIM_PATH
+    },
     "walk_octagon": {
         "goal_pos": [[0, 0, 0.27], 
                      [1, 0, 0.27], 
@@ -62,6 +86,28 @@ TASKS = {
         "model_path": DEFAULT_MODEL_PATH,
         "config_path": DEFAULT_CONFIG_PATH,
         "sim_path": DEFAULT_SIM_PATH
+    },
+    "walk_octagon_rugged_terr": {
+        "goal_pos": [[0, 0, 0.27], 
+                     [1, 0, 0.27], 
+                     [2, 1, 0.27], 
+                     [2, 2, 0.27],
+                     [1, 3, 0.27], 
+                     [0, 3, 0.27], 
+                     [-1, 2, 0.27], 
+                     [-1, 1, 0.27],
+                     [0, 0, 0.27], 
+                     [0, 0, 0.27]],
+        "default_orientation": DEFAULT_ORIENTATION,
+        "cmd_vel": [[0.0, 0.0]] + [[0.2, 0.0]] * 8 + [[0.0, 0.0]],
+        "goal_thresh": [0.2] * 10,
+        "desired_gait": ['in_place'] + 
+                        ['walk_fast'] * 8 + 
+                        ['in_place'],
+        "waiting_times": [0] * 10,
+        "model_path": DEFAULT_MODEL_PATH,
+        "config_path": DEFAULT_CONFIG_PATH,
+        "sim_path": DEFAULT_RUGGED_SIM_PATH
     },
     "big_box": {
         "goal_pos": [[0, 0, 0.27], 
@@ -85,6 +131,29 @@ TASKS = {
         "model_path": 'models/go1/go1_scene_mppi_pyr_big_box.xml',
         "config_path": 'configs/mppi_gait_config_big_box.yml',
         "sim_path": 'models/go1/go1_scene_mppi_pyr_big_box.xml'
+    },
+    "big_box_rugged_terr": {
+        "goal_pos": [[0, 0, 0.27], 
+                     [0.4, 0, 0.27], 
+                     [0.7, 0, 0.7], 
+                     [1, 0, 0.65], 
+                     [1, 0, 0.65]],
+        "default_orientation": DEFAULT_ORIENTATION,
+        "cmd_vel": [[0.0, 0.0]] + [[0.5, 0.0]] * 3 + [[0.0, 0.0]],
+        "goal_thresh": [0.2] * 5,
+        "desired_gait": ['in_place', 
+                         'walk', 
+                         'trot', 
+                         'trot', 
+                         'in_place'],
+        "waiting_times": [50,
+                          0, 
+                          0, 
+                          0, 
+                          200],
+        "model_path": 'models/go1/go1_scene_mppi_pyr_big_box_rugged_terr.xml',
+        "config_path": 'configs/mppi_gait_config_big_box.yml',
+        "sim_path": 'models/go1/go1_scene_mppi_pyr_big_box_rugged_terr.xml'
     },
     "stairs": {
         "goal_pos": [[0.0, 0.0, 0.27], 
@@ -113,6 +182,17 @@ TASKS = {
         "config_path": DEFAULT_CONFIG_PATH,
         "sim_path": DEFAULT_SIM_PATH
     },
+    "stand_rugged_terr": {
+        "goal_pos": [[0, 0, 0.27]],
+        "default_orientation": DEFAULT_ORIENTATION,
+        "cmd_vel": [[0.0, 0.0]],
+        "goal_thresh": [0.2],
+        "desired_gait": ['in_place'],
+        "waiting_times": [0],
+        "model_path": DEFAULT_MODEL_PATH,
+        "config_path": DEFAULT_CONFIG_PATH,
+        "sim_path": DEFAULT_RUGGED_SIM_PATH
+    },
     "push_box": {
         "goal_pos": [[0, 0.0, 0.27], 
                      [1, 1, 0.27]],
@@ -127,6 +207,22 @@ TASKS = {
         "model_path": 'models/go1/go1_scene_mppi_pyr_push_box_14in.xml',
         "config_path": 'configs/mppi_gait_config_push_box.yml',
         "sim_path": 'models/go1/go1_scene_mppi_pyr_push_box_14in.xml'
+    },
+    "push_box_rugged_terr": {
+        "goal_pos": [[0, 0.0, 0.27], 
+                     [1, 1, 0.27]],
+        "default_orientation": DEFAULT_ORIENTATION,
+        "cmd_vel": [[0.0, 0.0], 
+                    [0.2, 0.0]],
+        "goal_thresh": [0.2, 
+                        0.2],
+        "desired_gait": ['in_place', 
+                         'walk'],
+        "waiting_times": [None],
+
+        "model_path": 'models/go1/go1_scene_mppi_pyr_push_box_14in_rugged_terr.xml',
+        "config_path": 'configs/mppi_gait_config_push_box.yml',
+        "sim_path": 'models/go1/go1_scene_mppi_pyr_push_box_14in_rugged_terr.xml'
     }
 }
 
