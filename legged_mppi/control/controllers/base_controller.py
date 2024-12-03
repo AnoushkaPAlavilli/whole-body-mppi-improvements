@@ -134,7 +134,7 @@ class BaseMPPI:
             def bezier(t, control_points):
                 n = len(control_points) - 1
                 return sum(
-                    scipy.special.comb(n, i) * (1 - t) ** (n - i) * t ** i * control_points[i]
+                    scipy.special.comb(n, i) * (1 - t[:, None]) ** (n - i) * t[:, None] ** i * control_points[i]
                     for i in range(n + 1)
                 )
 
