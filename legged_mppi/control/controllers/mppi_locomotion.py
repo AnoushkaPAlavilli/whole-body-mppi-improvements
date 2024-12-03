@@ -174,6 +174,7 @@ class MPPI(BaseMPPI):
         min_cost = np.min(costs_sum)
         max_cost = np.max(costs_sum)
         self.exp_weights = np.exp(-1 / self.temperature * ((costs_sum - min_cost) / (max_cost - min_cost)))
+        cost_info = {'max_cost': max_cost, 'min_cost': min_cost}
 
         # Weighted average of action deltas
         weighted_delta_u = self.exp_weights.reshape(self.n_samples, 1, 1) * actions
@@ -184,15 +185,15 @@ class MPPI(BaseMPPI):
         # self.selected_trajectory = updated_actions
         # self.trajectory = np.roll(updated_actions, shift=-1, axis=0)
         # self.trajectory[-1] = updated_actions[-1]
-        # import pdb; pdb.set_trace()
-        # Improvement:
+        
+        # Improvement: Update the trajectory with mean of top 20% best trajectories
         best_indices = np.argsort(costs_sum)[:self.n_samples // 5]  # 20% best trajectories
         self.selected_trajectory = np.mean(actions[best_indices], axis=0)  # Trajectory is mean over best x% of sampled trajectories
         self.trajectory = np.roll(self.selected_trajectory, shift=-1, axis=0)
         self.trajectory[-1] = updated_actions[-1]
 
         # Return the first action in the trajectory as the output action
-        return updated_actions[0]
+        return updated_actions[0], cost_info
     
     def quaternion_distance_np(self, q1, q2):
         """

@@ -69,7 +69,7 @@ class BaseMPPI:
         self.trajectory = np.zeros((self.horizon, self.act_dim))
         self.trajectory += self.sampling_init
 
-    def sample_delta_u(self):
+    def sample_delta_u(self): # unused
         if self.sample_type == 'normal':
             size = (self.n_samples, self.horizon, self.act_dim)
             return self.generate_noise(size)
