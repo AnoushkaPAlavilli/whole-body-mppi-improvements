@@ -3,9 +3,12 @@ import concurrent.futures
 import threading
 from concurrent.futures import ThreadPoolExecutor
 import mujoco
-from scipy.interpolate import CubicSpline
+import scipy
+from scipy.interpolate import CubicSpline, interp1d, PchipInterpolator, BSpline, make_interp_spline
 from mujoco import rollout
 import yaml
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF
 
 class BaseMPPI:
     """
@@ -98,6 +101,48 @@ class BaseMPPI:
             actions = cubic_spline(np.arange(self.horizon))
             actions = np.clip(actions, self.act_min, self.act_max)
             return actions
+        
+        elif self.sample_type == 'linear':
+            indices_float = np.linspace(0, self.horizon - 1, num=self.n_knots)
+            indices = np.round(indices_float).astype(int)
+            size = (self.n_samples, self.n_knots, self.act_dim)
+            noise = self.generate_noise(size)
+            knot_points = self.trajectory[indices] + noise
+            linear_interp = interp1d(indices, knot_points, axis=1, kind='linear', fill_value="extrapolate")
+            actions = linear_interp(np.arange(self.horizon))
+            actions = np.clip(actions, self.act_min, self.act_max)
+            return actions
+        
+        elif self.sample_type == 'quintic':
+            indices_float = np.linspace(0, self.horizon - 1, num=self.n_knots)
+            indices = np.round(indices_float).astype(int)
+            size = (self.n_samples, self.n_knots, self.act_dim)
+            noise = self.generate_noise(size)
+            knot_points = self.trajectory[indices] + noise
+            quintic_spline = PchipInterpolator(indices, knot_points, axis=1)
+            actions = quintic_spline(np.arange(self.horizon))
+            actions = np.clip(actions, self.act_min, self.act_max)
+            return actions
+
+        elif self.sample_type == 'bezier':
+            indices_float = np.linspace(0, self.horizon - 1, num=self.n_knots)
+            indices = np.round(indices_float).astype(int)
+            size = (self.n_samples, self.n_knots, self.act_dim)
+            noise = self.generate_noise(size)
+            control_points = self.trajectory[indices] + noise
+
+            def bezier(t, control_points):
+                n = len(control_points) - 1
+                return sum(
+                    scipy.special.comb(n, i) * (1 - t) ** (n - i) * t ** i * control_points[i]
+                    for i in range(n + 1)
+                )
+
+            t = np.linspace(0, 1, self.horizon)
+            actions = np.array([bezier(t, cp) for cp in control_points])
+            actions = np.clip(actions, self.act_min, self.act_max)
+            return actions
+        
         
     def generate_noise(self, size):
         """
