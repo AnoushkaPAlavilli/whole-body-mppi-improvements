@@ -16,11 +16,11 @@
   <statistic extent="1" center="0 0 .3"/>
 
   <asset>
-    <hfield name="rugged_terrain" file="../../detailed_terrain.png" size="9 9 0.2 0.05"/>
+    <hfield name="rugged_terrain" file="../../detailed_terrain.png" size="9 9 0.08 0.05"/>
   </asset>
 
   <worldbody>
-    <geom name="rugged_ground_1" type="hfield" hfield="rugged_terrain" size="9 9 0.1" pos="-1 -1 -0.2"/>
+    <geom name="rugged_ground_1" type="hfield" hfield="rugged_terrain" size="9 9 0.08" pos="-1 -1 -0.08"/>
     <light pos="0 0 1.5" dir="0 0 -1" diffuse="0.5 0.5 0.5" specular="0.3 0.3 0.3"
       directional="true" castshadow="false"/>
     

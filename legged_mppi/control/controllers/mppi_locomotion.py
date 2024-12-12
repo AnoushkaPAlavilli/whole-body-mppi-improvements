@@ -130,14 +130,16 @@ class MPPI(BaseMPPI):
             elif self.desired_gait[self.goal_index] in ['trot']:
                 self.noise_sigma = np.array([0.06, 0.2, 0.2] * 4)
         
-    def update(self, obs):
+    def update(self, obs, warm_start=False):
         """
         Update the MPPI controller based on the current observation.
 
         Args:
             obs (np.ndarray): Current state observation.
+            warm_start (bool): Flag to enable warm start for trajectory optimization.
         Returns:
             np.ndarray: Selected action based on the optimal trajectory.
+            dict: Dictionary containing cost information.
         """
          # Generate perturbed actions for rollouts
         actions = self.perturb_action()
@@ -174,19 +176,27 @@ class MPPI(BaseMPPI):
         min_cost = np.min(costs_sum)
         max_cost = np.max(costs_sum)
         self.exp_weights = np.exp(-1 / self.temperature * ((costs_sum - min_cost) / (max_cost - min_cost)))
+        cost_info = {'max_cost': max_cost, 'min_cost': min_cost}
 
         # Weighted average of action deltas
         weighted_delta_u = self.exp_weights.reshape(self.n_samples, 1, 1) * actions
         weighted_delta_u = np.sum(weighted_delta_u, axis=0) / (np.sum(self.exp_weights) + 1e-10)
         updated_actions = np.clip(weighted_delta_u, self.act_min, self.act_max)
 
-        # Update the trajectory with the optimal action
-        self.selected_trajectory = updated_actions
-        self.trajectory = np.roll(updated_actions, shift=-1, axis=0)
-        self.trajectory[-1] = updated_actions[-1]
+        if warm_start == True:
+            # Improvement: Update the trajectory with mean of top 20% best trajectories
+            best_indices = np.argsort(costs_sum)[:self.n_samples // 5] # 20% best trajectories
+            self.selected_trajectory = np.mean(actions[best_indices], axis=0) # Trajectory is mean over best x% of sampled trajectories
+            self.trajectory = np.roll(self.selected_trajectory, shift=-1, axis=0)
+            self.trajectory[-1] = updated_actions[-1]
+        else:
+            # Update the trajectory with the optimal action
+            self.selected_trajectory = updated_actions
+            self.trajectory = np.roll(updated_actions, shift=-1, axis=0)
+            self.trajectory[-1] = updated_actions[-1]
 
         # Return the first action in the trajectory as the output action
-        return updated_actions[0]
+        return updated_actions[0], cost_info
     
     def quaternion_distance_np(self, q1, q2):
         """
