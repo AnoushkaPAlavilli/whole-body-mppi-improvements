@@ -175,6 +175,10 @@ class MPPI(BaseMPPI):
         # Calculate MPPI weights for the samples
         min_cost = np.min(costs_sum)
         max_cost = np.max(costs_sum)
+        cost_info = {
+            'min_cost':min_cost,
+            'max_cost':max_cost
+        }
         self.exp_weights = np.exp(-1 / self.temperature * ((costs_sum - min_cost) / (max_cost - min_cost)))
         cost_info = {'max_cost': max_cost, 'min_cost': min_cost}
 

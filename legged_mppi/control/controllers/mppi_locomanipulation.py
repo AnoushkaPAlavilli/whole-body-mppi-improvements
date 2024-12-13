@@ -172,6 +172,10 @@ class MPPI_box_push(BaseMPPI):
         # Calculate MPPI weights for the samples
         min_cost = np.min(costs_sum)
         max_cost = np.max(costs_sum)
+        cost_info = {
+            'min_cost':min_cost,
+            'max_cost':max_cost
+        }
         self.exp_weights = np.exp(-1 / self.temperature * ((costs_sum - min_cost) / (max_cost - min_cost)))
 
         # Weighted average of action deltas
@@ -185,7 +189,7 @@ class MPPI_box_push(BaseMPPI):
         self.trajectory[-1] = updated_actions[-1]
 
         # Return the first action in the trajectory as the output action
-        return updated_actions[0]
+        return updated_actions[0], cost_info
     
     def quaternion_distance_np(self, q1, q2):
         dot_products = np.einsum('ij,ij->i', q1, q2)
